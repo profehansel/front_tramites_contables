@@ -1,0 +1,43 @@
+.barra-busqueda {
+  margin-bottom: 0.75rem;
+
+  input {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+.form-dialogo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  label {
+    font-size: 0.8rem;
+    color: var(--app-text-600);
+    margin-top: 0.5rem;
+  }
+
+  p-button {
+    margin-top: 1.25rem;
+  }
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    line-height: 0;
+  }
+}
+
+.acciones-confirmar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}

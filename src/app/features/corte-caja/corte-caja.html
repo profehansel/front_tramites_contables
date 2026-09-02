@@ -1,0 +1,122 @@
+<div class="page-header">
+  <div>
+    <h1>Corte de caja</h1>
+    <p>Arqueo secuencial: cada corte parte de donde cerro el anterior</p>
+  </div>
+  <p-button label="Cerrar corte" icon="pi pi-lock" (onClick)="abrirCierre()" />
+</div>
+
+@if (saldoActual(); as saldo) {
+  <div class="grid-saldo">
+    <div class="card-acento">
+      <p class="etiqueta">Saldo anterior</p>
+      <h3 class="monto">Q {{ saldo.saldoAnterior | number: '1.2-2' }}</h3>
+    </div>
+    <div class="card-acento">
+      <p class="etiqueta">Ingresos en efectivo (desde el ultimo corte)</p>
+      <h3 class="monto monto-positivo">Q {{ saldo.totalIngresos | number: '1.2-2' }}</h3>
+    </div>
+    <div class="card-acento">
+      <p class="etiqueta">Gastos (desde el ultimo corte)</p>
+      <h3 class="monto monto-negativo">Q {{ saldo.totalGastos | number: '1.2-2' }}</h3>
+    </div>
+    <div class="card-acento destacado">
+      <p class="etiqueta">Saldo teorico ahora mismo</p>
+      <h3 class="monto">Q {{ saldo.saldoTeorico | number: '1.2-2' }}</h3>
+    </div>
+  </div>
+}
+
+<h2 class="titulo-seccion">Historial de cortes</h2>
+
+<div class="barra-busqueda">
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por usuario u observacion..."
+    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+  />
+</div>
+
+<p-table #dt [value]="historial()" [globalFilterFields]="['usuario.usuarioNombre', 'observacion']" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Fecha</th>
+      <th>Usuario</th>
+      <th>Saldo anterior</th>
+      <th>Ingresos</th>
+      <th>Gastos</th>
+      <th>Teorico</th>
+      <th>Contado</th>
+      <th>Diferencia</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-corte>
+    <tr>
+      <td>{{ corte.corteFecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+      <td>{{ corte.usuario.usuarioNombre }}</td>
+      <td class="monto">Q {{ corte.saldoAnterior | number: '1.2-2' }}</td>
+      <td class="monto monto-positivo">Q {{ corte.totalIngresos | number: '1.2-2' }}</td>
+      <td class="monto monto-negativo">Q {{ corte.totalGastos | number: '1.2-2' }}</td>
+      <td class="monto">Q {{ corte.saldoTeorico | number: '1.2-2' }}</td>
+      <td class="monto">Q {{ corte.saldoContado | number: '1.2-2' }}</td>
+      <td>
+        @if (corte.diferencia === 0) {
+          <p-tag value="cuadra" severity="success" />
+        } @else {
+          <p-tag [value]="(corte.diferencia > 0 ? '+' : '') + (corte.diferencia | number: '1.2-2')" [severity]="corte.diferencia > 0 ? 'info' : 'danger'" />
+        }
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8">Todavia no se ha cerrado ningun corte.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog header="Cerrar corte de caja" [(visible)]="dialogoAbierto" [modal]="true" [style]="{ width: '520px' }">
+  @if (saldoActual(); as saldo) {
+    <p class="ayuda-dialogo">Saldo teorico en este momento: <strong>Q {{ saldo.saldoTeorico | number: '1.2-2' }}</strong></p>
+  }
+
+  <div class="toggle-desglose">
+    <p-checkbox [(ngModel)]="usarDesglose" [binary]="true" inputId="usarDesglose" />
+    <label for="usarDesglose">Contar por billete/moneda (opcional)</label>
+  </div>
+
+  @if (!usarDesglose) {
+    <label>Total contado (Q)</label>
+    <p-inputNumber [(ngModel)]="saldoContadoManual" mode="decimal" [minFractionDigits]="2" styleClass="w-full" />
+  } @else {
+    <div class="tabla-denominaciones">
+      @for (fila of filasDenominacion; track fila.valor) {
+        <div class="fila-denominacion">
+          <span class="valor-denominacion">Q {{ fila.valor | number: '1.2-2' }}</span>
+          <span class="simbolo">x</span>
+          <p-inputNumber [(ngModel)]="fila.cantidad" [min]="0" [showButtons]="true" buttonLayout="horizontal" spinnerMode="horizontal" inputStyleClass="cantidad-input" />
+          <span class="subtotal-denominacion">Q {{ fila.valor * fila.cantidad | number: '1.2-2' }}</span>
+        </div>
+      }
+    </div>
+    <p class="total-desglose">
+      <strong>Total contado:</strong>
+      <span class="monto">Q {{ totalDesglose() | number: '1.2-2' }}</span>
+    </p>
+  }
+
+  <p class="diferencia-preview" [class.con-diferencia]="diferenciaPrevia() !== 0">
+    Diferencia: <strong>Q {{ diferenciaPrevia() | number: '1.2-2' }}</strong>
+    {{ diferenciaPrevia() > 0 ? '(sobrante)' : diferenciaPrevia() < 0 ? '(faltante)' : '' }}
+  </p>
+
+  <label>Observacion @if (diferenciaPrevia() !== 0) { (obligatoria por la diferencia) }</label>
+  <textarea pTextarea rows="2" style="width: 100%" [(ngModel)]="observacion"></textarea>
+
+  @if (errorGuardar()) {
+    <p-message severity="error" [text]="errorGuardar()!" styleClass="w-full" />
+  }
+
+  <p-button label="Cerrar corte" styleClass="w-full" [loading]="guardando()" (onClick)="cerrarCorte()" />
+</p-dialog>

@@ -1,0 +1,96 @@
+@import "primeicons/primeicons.css";
+
+// =====================================================================
+// Tokens de diseño del sistema de tramites
+// Paleta: verde azulado profundo (confianza/finanzas) + neutros calidos.
+// Tipografia: Inter Tight para titulos, Inter para cuerpo y tablas
+// (numeros tabulares para que las columnas de montos alineen).
+// =====================================================================
+
+:root {
+  --app-primary-900: #0b3d3a;
+  --app-primary-700: #0f6e5d;
+  --app-primary-500: #17916f;
+  --app-primary-100: #e3f3ee;
+
+  --app-surface-0: #ffffff;
+  --app-surface-50: #f7f6f3;
+  --app-surface-100: #eeece6;
+  --app-surface-border: #e2dfd6;
+
+  --app-text-900: #1f2421;
+  --app-text-600: #5b6560;
+
+  --app-danger: #b3432b;
+  --app-warning: #b8842a;
+  --app-success: #1f8a5f;
+
+  --app-font-display: 'Inter Tight', 'Inter', sans-serif;
+  --app-font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--app-font-body);
+  background: var(--app-surface-50);
+  color: var(--app-text-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--app-font-display);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+// Numeros de dinero siempre con figuras tabulares, para que las tablas
+// de montos alineen visualmente columna por columna.
+.monto {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.monto-negativo {
+  color: var(--app-danger);
+}
+
+.monto-positivo {
+  color: var(--app-success);
+}
+
+// Tarjeta con acento superior de color - elemento distintivo reutilizado
+// en dashboard/detalle de cliente en vez de sombras genericas.
+.card-acento {
+  background: var(--app-surface-0);
+  border: 1px solid var(--app-surface-border);
+  border-top: 3px solid var(--app-primary-700);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--app-primary-900);
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    color: var(--app-text-600);
+    font-size: 0.9rem;
+  }
+}

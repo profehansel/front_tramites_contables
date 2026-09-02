@@ -1,0 +1,17 @@
+.formulario-pago {
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.8rem;
+    color: var(--app-text-600);
+    margin-top: 0.75rem;
+  }
+
+  p-button {
+    margin-top: 1.25rem;
+    align-self: flex-start;
+  }
+}

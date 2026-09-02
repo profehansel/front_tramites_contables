@@ -1,0 +1,83 @@
+<div class="page-header">
+  <div>
+    <h1>Catalogo de tramites</h1>
+    <p>Servicios que ofreces y su costo vigente</p>
+  </div>
+  <p-button label="Nuevo item" icon="pi pi-plus" (onClick)="abrirNuevo()" />
+</div>
+
+<div class="barra-busqueda">
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por nombre o tipo..."
+    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+  />
+</div>
+
+<p-table #dt [value]="items()" [globalFilterFields]="['catalogoNombre', 'catalogoTipo']" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3.5rem">No.</th>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Costo</th>
+      <th style="width: 7rem">Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-item let-i="rowIndex">
+    <tr>
+      <td>{{ i + 1 }}</td>
+      <td>{{ item.catalogoNombre }}</td>
+      <td>{{ item.catalogoTipo || '-' }}</td>
+      <td class="monto">Q {{ item.catalogoCosto | number: '1.2-2' }}</td>
+      <td>
+        <div class="acciones">
+          <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="abrirEditar(item)" pTooltip="Editar" tooltipPosition="top" />
+          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="pedirEliminar(item)" pTooltip="Eliminar" tooltipPosition="top" />
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="5">Todavia no hay items en el catalogo.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  [header]="editandoId() ? 'Editar item de catalogo' : 'Nuevo item de catalogo'"
+  [(visible)]="dialogoAbierto"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+>
+  <div class="form-dialogo">
+    <label>Nombre</label>
+    <input pInputText [(ngModel)]="form.catalogoNombre" />
+
+    <label>Descripcion</label>
+    <textarea pTextarea rows="3" [(ngModel)]="form.catalogoDescripcion"></textarea>
+
+    <label>Tipo</label>
+    <input pInputText [(ngModel)]="form.catalogoTipo" />
+
+    <label>Costo (Q)</label>
+    <p-inputNumber [(ngModel)]="form.catalogoCosto" mode="decimal" [minFractionDigits]="2" styleClass="w-full" />
+
+    <p-button label="Guardar" styleClass="w-full" [loading]="guardando()" (onClick)="guardar()" />
+  </div>
+</p-dialog>
+
+<p-dialog header="Eliminar item de catalogo" [visible]="!!itemEliminar()" (visibleChange)="!$event && itemEliminar.set(null)" [modal]="true" [style]="{ width: '380px' }">
+  @if (itemEliminar(); as item) {
+    <p>
+      ¿Eliminar <strong>{{ item.catalogoNombre }}</strong>? Los tramites que ya lo usaron
+      conservan su historial; solo deja de aparecer para tramites nuevos.
+    </p>
+    <div class="acciones-confirmar">
+      <p-button label="Cancelar" [text]="true" (onClick)="itemEliminar.set(null)" />
+      <p-button label="Eliminar" severity="danger" [loading]="eliminando()" (onClick)="confirmarEliminar()" />
+    </div>
+  }
+</p-dialog>

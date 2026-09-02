@@ -1,0 +1,186 @@
+<div class="page-header">
+  <div>
+    <h1>Tramites</h1>
+    <p>Solicitudes de clientes en proceso, finalizadas o canceladas</p>
+  </div>
+  <p-button label="Nuevo tramite" icon="pi pi-plus" (onClick)="abrirNuevo()" />
+</div>
+
+<div class="barra-busqueda">
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por tramite o cliente..."
+    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+  />
+</div>
+
+<p-table #dt [value]="tramites()" [globalFilterFields]="['_busqueda']" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3.5rem">No.</th>
+      <th>Tramite</th>
+      <th>Cliente</th>
+      <th>Fecha inicio</th>
+      <th>Fecha finalizado</th>
+      <th>Costo</th>
+      <th style="width: 11rem">Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-tramite let-i="rowIndex">
+    <tr>
+      <td>{{ i + 1 }}</td>
+      <td>
+        {{ nombreTramite(tramite) }}
+        <p-tag
+          [value]="tramite.tramiteStatus"
+          [severity]="
+            tramite.tramiteStatus === 'finalizado'
+              ? 'success'
+              : tramite.tramiteStatus === 'cancelado'
+                ? 'danger'
+                : 'info'
+          "
+          styleClass="tag-estado"
+        />
+      </td>
+      <td>
+        <a [routerLink]="['/clientes', tramite.cliente.clienteId]">{{ tramite.cliente.clienteNombre }}</a>
+      </td>
+      <td>{{ tramite.tramiteFechaInicio | date: 'dd/MM/yyyy' }}</td>
+      <td>{{ tramite.tramiteFechaFin ? (tramite.tramiteFechaFin | date: 'dd/MM/yyyy') : '-' }}</td>
+      <td class="monto">Q {{ costoTramite(tramite) | number: '1.2-2' }}</td>
+      <td>
+        <div class="acciones">
+          <p-button icon="pi pi-eye" [text]="true" size="small" (onClick)="verDetalle(tramite)" pTooltip="Ver detalle" tooltipPosition="top" />
+
+          @if (tramite.tramiteStatus === 'en_proceso') {
+            <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="abrirEditar(tramite)" pTooltip="Editar" tooltipPosition="top" />
+            <p-button
+              icon="pi pi-check"
+              [text]="true"
+              size="small"
+              severity="success"
+              [loading]="finalizandoId() === tramite.tramiteId"
+              (onClick)="finalizar(tramite.tramiteId)"
+              pTooltip="Finalizar"
+              tooltipPosition="top"
+            />
+            <p-button icon="pi pi-times" [text]="true" size="small" severity="warn" (onClick)="pedirCancelar(tramite)" pTooltip="Cancelar" tooltipPosition="top" />
+            <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="pedirEliminar(tramite)" pTooltip="Eliminar" tooltipPosition="top" />
+          }
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">Todavia no hay tramites registrados.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Crear / editar -->
+<p-dialog
+  [header]="editandoId() ? 'Editar tramite' : 'Nuevo tramite'"
+  [(visible)]="dialogoAbierto"
+  [modal]="true"
+  [style]="{ width: '460px' }"
+>
+  <div class="form-dialogo">
+    <label>Cliente</label>
+    <p-select
+      [options]="clientes()"
+      optionLabel="clienteNombre"
+      optionValue="clienteId"
+      [(ngModel)]="clienteSeleccionado"
+      [disabled]="!!editandoId()"
+      placeholder="Selecciona un cliente"
+      styleClass="w-full"
+    />
+
+    <label>Servicios del catalogo</label>
+    <p-multiSelect
+      [options]="catalogoItems()"
+      optionLabel="catalogoNombre"
+      optionValue="catalogoId"
+      [(ngModel)]="itemsSeleccionados"
+      placeholder="Selecciona uno o mas servicios"
+      styleClass="w-full"
+    />
+
+    <p-button label="Guardar" styleClass="w-full" [loading]="guardando()" (onClick)="guardar()" />
+  </div>
+</p-dialog>
+
+<!-- Ver detalle -->
+<p-dialog header="Detalle del tramite" [visible]="!!tramiteDetalle()" (visibleChange)="!$event && tramiteDetalle.set(null)" [modal]="true" [style]="{ width: '460px' }">
+  @if (tramiteDetalle(); as tramite) {
+    <div class="detalle-tramite">
+      <p><strong>Cliente:</strong> {{ tramite.cliente.clienteNombre }}</p>
+      <p><strong>Estado:</strong> {{ tramite.tramiteStatus }}</p>
+      <p><strong>Fecha inicio:</strong> {{ tramite.tramiteFechaInicio | date: 'dd/MM/yyyy' }}</p>
+      @if (tramite.tramiteFechaFin) {
+        <p><strong>Fecha finalizado:</strong> {{ tramite.tramiteFechaFin | date: 'dd/MM/yyyy' }}</p>
+      }
+      @if (tramite.tramiteObservacion) {
+        <p><strong>Observacion:</strong> {{ tramite.tramiteObservacion }}</p>
+      }
+
+      <h3>Servicios incluidos</h3>
+      <ul class="lista-servicios">
+        @for (detalle of tramite.detalles; track detalle.detalleId) {
+          <li>
+            <span>{{ detalle.catalogo.catalogoNombre }}</span>
+            <span class="monto">Q {{ detalle.detalleCosto | number: '1.2-2' }}</span>
+          </li>
+        }
+      </ul>
+      <p class="total-detalle">
+        <strong>Total:</strong>
+        <span class="monto">Q {{ costoTramite(tramite) | number: '1.2-2' }}</span>
+      </p>
+    </div>
+  }
+</p-dialog>
+
+<!-- Cancelar -->
+<p-dialog header="Cancelar tramite" [visible]="!!tramiteCancelar()" (visibleChange)="!$event && tramiteCancelar.set(null)" [modal]="true" [style]="{ width: '420px' }">
+  @if (tramiteCancelar(); as tramite) {
+    <p>
+      Vas a cancelar el tramite de <strong>{{ tramite.cliente.clienteNombre }}</strong>.
+      Cuentanos brevemente por que no se completo.
+    </p>
+    <textarea
+      pTextarea
+      rows="3"
+      style="width: 100%"
+      placeholder="Ej. el cliente desistio, faltaron documentos, etc."
+      [(ngModel)]="observacionCancelar"
+    ></textarea>
+    <div class="acciones-confirmar">
+      <p-button label="Volver" [text]="true" (onClick)="tramiteCancelar.set(null)" />
+      <p-button
+        label="Cancelar tramite"
+        severity="warn"
+        [disabled]="observacionCancelar.trim().length < 3"
+        [loading]="cancelando()"
+        (onClick)="confirmarCancelar()"
+      />
+    </div>
+  }
+</p-dialog>
+
+<!-- Eliminar -->
+<p-dialog header="Eliminar tramite" [visible]="!!tramiteEliminar()" (visibleChange)="!$event && tramiteEliminar.set(null)" [modal]="true" [style]="{ width: '380px' }">
+  @if (tramiteEliminar(); as tramite) {
+    <p>
+      ¿Eliminar el tramite de <strong>{{ tramite.cliente.clienteNombre }}</strong>? Esta accion
+      no se puede deshacer.
+    </p>
+    <div class="acciones-confirmar">
+      <p-button label="Cancelar" [text]="true" (onClick)="tramiteEliminar.set(null)" />
+      <p-button label="Eliminar" severity="danger" [loading]="eliminando()" (onClick)="confirmarEliminar()" />
+    </div>
+  }
+</p-dialog>

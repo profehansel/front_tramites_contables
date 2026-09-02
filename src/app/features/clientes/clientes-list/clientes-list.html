@@ -1,0 +1,94 @@
+<div class="page-header">
+  <div>
+    <h1>Clientes</h1>
+    <p>Listado de clientes registrados</p>
+  </div>
+  <p-button label="Nuevo cliente" icon="pi pi-plus" (onClick)="abrirNuevo()" />
+</div>
+
+<div class="barra-busqueda">
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por nombre, NIT, telefono o correo..."
+    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+  />
+</div>
+
+<p-table #dt [value]="clientes()" [globalFilterFields]="['clienteNombre', 'clienteNit', 'clienteTelefonoPrincipal', 'clienteCorreo']" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3.5rem">No.</th>
+      <th>Nombre</th>
+      <th>NIT</th>
+      <th>Telefono</th>
+      <th>Correo</th>
+      <th style="width: 9rem">Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-cliente let-i="rowIndex">
+    <tr>
+      <td>{{ i + 1 }}</td>
+      <td>{{ cliente.clienteNombre }}</td>
+      <td>{{ cliente.clienteNit || '-' }}</td>
+      <td>{{ cliente.clienteTelefonoPrincipal || '-' }}</td>
+      <td>{{ cliente.clienteCorreo || '-' }}</td>
+      <td>
+        <div class="acciones">
+          <a [routerLink]="['/clientes', cliente.clienteId]" pTooltip="Ver detalle" tooltipPosition="top">
+            <p-button icon="pi pi-eye" [text]="true" size="small" />
+          </a>
+          <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="abrirEditar(cliente)" pTooltip="Editar" tooltipPosition="top" />
+          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="pedirEliminar(cliente)" pTooltip="Eliminar" tooltipPosition="top" />
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="6">No hay clientes registrados todavia.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  [header]="editandoId() ? 'Editar cliente' : 'Nuevo cliente'"
+  [(visible)]="dialogoAbierto"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+>
+  <div class="form-dialogo">
+    <label>Nombre completo</label>
+    <input pInputText [(ngModel)]="form.clienteNombre" />
+
+    <label>NIT</label>
+    <input pInputText [(ngModel)]="form.clienteNit" />
+
+    <label>CUI</label>
+    <input pInputText [(ngModel)]="form.clienteCui" />
+
+    <label>Telefono principal</label>
+    <input pInputText [(ngModel)]="form.clienteTelefonoPrincipal" />
+
+    <label>Correo</label>
+    <input pInputText [(ngModel)]="form.clienteCorreo" />
+
+    <label>Direccion</label>
+    <input pInputText [(ngModel)]="form.clienteDireccion" />
+
+    <p-button label="Guardar" styleClass="w-full" [loading]="guardando()" (onClick)="guardar()" />
+  </div>
+</p-dialog>
+
+<p-dialog header="Eliminar cliente" [visible]="!!clienteEliminar()" (visibleChange)="!$event && clienteEliminar.set(null)" [modal]="true" [style]="{ width: '380px' }">
+  @if (clienteEliminar(); as cliente) {
+    <p>
+      ¿Eliminar a <strong>{{ cliente.clienteNombre }}</strong>? No se borra el historial, pero
+      dejara de aparecer en el listado.
+    </p>
+    <div class="acciones-confirmar">
+      <p-button label="Cancelar" [text]="true" (onClick)="clienteEliminar.set(null)" />
+      <p-button label="Eliminar" severity="danger" [loading]="eliminando()" (onClick)="confirmarEliminar()" />
+    </div>
+  }
+</p-dialog>

@@ -1,0 +1,56 @@
+<div class="shell">
+  <aside class="sidebar">
+    <div class="marca">
+      <span class="marca-icono pi pi-briefcase"></span>
+      <div>
+        <strong>Tramites</strong>
+        <small>Panel del contador</small>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/dashboard" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-home"></i> Dashboard
+      </a>
+      <a routerLink="/clientes" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-users"></i> Clientes
+      </a>
+      <a routerLink="/tramites" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-file"></i> Tramites
+      </a>
+      <a routerLink="/catalogo" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-list"></i> Catalogo
+      </a>
+      <a routerLink="/pagos" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-wallet"></i> Pagos
+      </a>
+      <a routerLink="/gastos" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-money-bill"></i> Gastos
+      </a>
+      <a routerLink="/corte-caja" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-lock"></i> Corte de caja
+      </a>
+      <a routerLink="/alertas" routerLinkActive="activo" class="menu-item">
+        <i class="pi pi-bell"></i> Alertas
+        @if (totalAlertas() > 0) {
+          <p-badge [value]="totalAlertas()" severity="danger" />
+        }
+      </a>
+    </nav>
+  </aside>
+
+  <div class="contenido">
+    <header class="topbar">
+      <span></span>
+      <div class="usuario">
+        <span class="pi pi-user"></span>
+        <span>{{ usuario()?.usuarioNombre }}</span>
+        <p-button icon="pi pi-sign-out" [text]="true" (onClick)="cerrarSesion()" />
+      </div>
+    </header>
+
+    <main class="pagina">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

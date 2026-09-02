@@ -1,0 +1,38 @@
+.grid-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card-acento h2 {
+  font-size: 1.6rem;
+  margin: 0.35rem 0 0.15rem;
+  color: var(--app-primary-900);
+}
+
+.card-acento p {
+  margin: 0;
+  color: var(--app-text-600);
+  font-size: 0.85rem;
+}
+
+.etiqueta-icono {
+  color: var(--app-primary-700);
+  font-size: 1.1rem;
+}
+
+.card-accion {
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-top-color: var(--app-primary-500);
+  }
+}
+
+.titulo-seccion {
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+  color: var(--app-primary-900);
+}

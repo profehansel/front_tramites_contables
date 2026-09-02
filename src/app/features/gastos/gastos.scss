@@ -1,0 +1,52 @@
+.resumen-gastos {
+  max-width: 260px;
+  margin-bottom: 1.25rem;
+
+  .etiqueta {
+    margin: 0;
+    color: var(--app-text-600);
+    font-size: 0.85rem;
+  }
+
+  h2 {
+    margin: 0.25rem 0 0;
+  }
+}
+
+.barra-busqueda {
+  margin-bottom: 0.75rem;
+
+  input {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+.form-dialogo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.8rem;
+    color: var(--app-text-600);
+    margin-top: 0.5rem;
+  }
+
+  p-button {
+    margin-top: 1.25rem;
+  }
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.acciones-confirmar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}

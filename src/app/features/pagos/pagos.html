@@ -1,0 +1,46 @@
+<div class="page-header">
+  <div>
+    <h1>Registrar pago</h1>
+    <p>Aplica un pago manual (efectivo, transferencia o tarjeta) a uno o varios tramites</p>
+  </div>
+</div>
+
+<div class="card-acento formulario-pago">
+  <label>Cliente</label>
+  <p-select
+    [options]="clientes()"
+    optionLabel="clienteNombre"
+    optionValue="clienteId"
+    [(ngModel)]="clienteSeleccionado"
+    (onChange)="onClienteChange()"
+    placeholder="Selecciona un cliente"
+    styleClass="w-full"
+  />
+
+  @if (opcionesTramites().length > 0) {
+    <label>Tramites a pagar</label>
+    <p-multiSelect
+      [options]="opcionesTramites()"
+      optionLabel="label"
+      optionValue="tramiteId"
+      [(ngModel)]="tramitesSeleccionados"
+      placeholder="Selecciona uno o mas tramites"
+      styleClass="w-full"
+    />
+  }
+
+  <label>Monto total del pago (Q)</label>
+  <p-inputNumber [(ngModel)]="pagoMonto" mode="decimal" [minFractionDigits]="2" styleClass="w-full" />
+
+  <label>Metodo</label>
+  <p-select [options]="metodos" optionLabel="label" optionValue="value" [(ngModel)]="pagoMetodo" styleClass="w-full" />
+
+  @if (mensaje()) {
+    <p-message severity="success" [text]="mensaje()!" styleClass="w-full" />
+  }
+  @if (error()) {
+    <p-message severity="error" [text]="error()!" styleClass="w-full" />
+  }
+
+  <p-button label="Registrar pago" [loading]="guardando()" (onClick)="registrarPago()" />
+</div>

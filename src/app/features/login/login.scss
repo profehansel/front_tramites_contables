@@ -1,0 +1,53 @@
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--app-primary-900), var(--app-primary-700));
+}
+
+.login-tarjeta {
+  width: 360px;
+  background: var(--app-surface-0);
+  border-radius: 14px;
+  padding: 2rem 2rem 2.25rem;
+  box-shadow: 0 20px 45px rgba(11, 61, 58, 0.35);
+}
+
+.login-marca {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  .pi {
+    font-size: 1.75rem;
+    color: var(--app-primary-700);
+  }
+
+  h1 {
+    font-size: 1.25rem;
+    margin: 0.5rem 0 0.15rem;
+    color: var(--app-primary-900);
+  }
+
+  p {
+    margin: 0;
+    color: var(--app-text-600);
+    font-size: 0.85rem;
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.82rem;
+    color: var(--app-text-600);
+    margin-top: 0.5rem;
+  }
+
+  p-button {
+    margin-top: 1rem;
+  }
+}

@@ -1,0 +1,56 @@
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Resumen de mora y actividad pendiente</p>
+  </div>
+</div>
+
+<div class="grid-tarjetas">
+  <div class="card-acento">
+    <span class="pi pi-bell etiqueta-icono"></span>
+    <h2>{{ alertas().length }}</h2>
+    <p>Alertas de mora activas</p>
+  </div>
+
+  <a routerLink="/tramites" class="card-acento card-accion">
+    <span class="pi pi-file etiqueta-icono"></span>
+    <h2>Ver tramites</h2>
+    <p>Crear o revisar tramites en proceso</p>
+  </a>
+
+  <a routerLink="/clientes" class="card-accion card-acento">
+    <span class="pi pi-users etiqueta-icono"></span>
+    <h2>Ver clientes</h2>
+    <p>Consultar deuda y saldo por cliente</p>
+  </a>
+</div>
+
+<h2 class="titulo-seccion">Clientes con tramites en mora</h2>
+
+<p-table [value]="alertas()" [paginator]="true" [rows]="8" styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Cliente</th>
+      <th>Tramite</th>
+      <th>Generada</th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-alerta>
+    <tr>
+      <td>{{ alerta.cliente.clienteNombre }}</td>
+      <td>{{ alerta.tramite ? nombreTramite(alerta.tramite) : '-' }}</td>
+      <td>{{ alerta.alertaFechaGenerada | date: 'dd/MM/yyyy' }}</td>
+      <td>
+        <a [routerLink]="['/clientes', alerta.cliente.clienteId]">
+          <span class="pi pi-arrow-up-right"></span>
+        </a>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="4">No hay tramites en mora por el momento.</td>
+    </tr>
+  </ng-template>
+</p-table>

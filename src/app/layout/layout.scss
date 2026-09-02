@@ -1,0 +1,91 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: var(--app-primary-900);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1rem;
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.5rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 1rem;
+
+  .marca-icono {
+    font-size: 1.4rem;
+  }
+
+  strong {
+    display: block;
+    font-family: var(--app-font-display);
+  }
+
+  small {
+    opacity: 0.7;
+  }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.92rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &.activo {
+    background: var(--app-primary-700);
+    color: #fff;
+  }
+}
+
+.contenido {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  background: var(--app-surface-0);
+  border-bottom: 1px solid var(--app-surface-border);
+
+  .usuario {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--app-text-600);
+  }
+}
+
+.pagina {
+  padding: 1.75rem;
+  flex: 1;
+}

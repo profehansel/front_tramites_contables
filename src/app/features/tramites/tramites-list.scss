@@ -1,0 +1,79 @@
+.barra-busqueda {
+  margin-bottom: 0.75rem;
+
+  input {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+.form-dialogo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.8rem;
+    color: var(--app-text-600);
+    margin-top: 0.5rem;
+  }
+
+  p-button {
+    margin-top: 1.25rem;
+  }
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+::ng-deep .tag-estado {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.detalle-tramite {
+  p {
+    margin: 0.35rem 0;
+    font-size: 0.9rem;
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    margin: 1rem 0 0.5rem;
+    color: var(--app-primary-900);
+  }
+}
+
+.lista-servicios {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--app-surface-border);
+  }
+}
+
+.total-detalle {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem !important;
+  font-size: 0.95rem;
+}
+
+.acciones-confirmar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}

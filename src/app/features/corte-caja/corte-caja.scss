@@ -1,0 +1,109 @@
+.grid-saldo {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.etiqueta {
+  margin: 0;
+  color: var(--app-text-600);
+  font-size: 0.82rem;
+}
+
+.card-acento h3 {
+  margin: 0.35rem 0 0;
+  font-size: 1.3rem;
+}
+
+.destacado {
+  border-top-color: var(--app-primary-500);
+  background: var(--app-primary-100);
+}
+
+.titulo-seccion {
+  font-size: 1.05rem;
+  margin: 0 0 0.75rem;
+  color: var(--app-primary-900);
+}
+
+.barra-busqueda {
+  margin-bottom: 0.75rem;
+
+  input {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+.ayuda-dialogo {
+  font-size: 0.88rem;
+  color: var(--app-text-600);
+  margin: 0 0 1rem;
+}
+
+.toggle-desglose {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  label {
+    font-size: 0.88rem;
+  }
+}
+
+label {
+  font-size: 0.8rem;
+  color: var(--app-text-600);
+  display: block;
+  margin: 0.5rem 0 0.35rem;
+}
+
+.tabla-denominaciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.fila-denominacion {
+  display: grid;
+  grid-template-columns: 70px 16px 1fr 90px;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+
+  .valor-denominacion {
+    font-weight: 600;
+  }
+
+  .simbolo {
+    color: var(--app-text-600);
+    text-align: center;
+  }
+
+  .subtotal-denominacion {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.total-desglose {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.75rem 0 0;
+  font-size: 0.95rem;
+}
+
+.diferencia-preview {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  color: var(--app-text-600);
+
+  &.con-diferencia {
+    color: var(--app-danger);
+  }
+}

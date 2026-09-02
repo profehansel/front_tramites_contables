@@ -1,0 +1,88 @@
+<div class="page-header">
+  <div>
+    <h1>Gastos</h1>
+    <p>Egresos de caja registrados</p>
+  </div>
+  <p-button label="Nuevo gasto" icon="pi pi-plus" (onClick)="abrirNuevo()" />
+</div>
+
+<div class="card-acento resumen-gastos">
+  <p class="etiqueta">Total registrado</p>
+  <h2 class="monto monto-negativo">Q {{ totalGastos() | number: '1.2-2' }}</h2>
+</div>
+
+<div class="barra-busqueda">
+  <input
+    pInputText
+    type="text"
+    placeholder="Buscar por descripcion o usuario..."
+    (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+  />
+</div>
+
+<p-table #dt [value]="gastos()" [globalFilterFields]="['gastoDescripcion', 'usuario.usuarioNombre']" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3.5rem">No.</th>
+      <th>Descripcion</th>
+      <th>Monto</th>
+      <th>Registrado por</th>
+      <th>Fecha</th>
+      <th style="width: 7rem">Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-gasto let-i="rowIndex">
+    <tr>
+      <td>{{ i + 1 }}</td>
+      <td>{{ gasto.gastoDescripcion }}</td>
+      <td class="monto monto-negativo">Q {{ gasto.gastoMonto | number: '1.2-2' }}</td>
+      <td>{{ gasto.usuario.usuarioNombre }}</td>
+      <td>{{ gasto.gastoFecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+      <td>
+        <div class="acciones">
+          <p-button icon="pi pi-pencil" [text]="true" size="small" (onClick)="abrirEditar(gasto)" pTooltip="Editar" tooltipPosition="top" />
+          <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger" (onClick)="pedirEliminar(gasto)" pTooltip="Eliminar" tooltipPosition="top" />
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="6">Todavia no hay gastos registrados.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  [header]="editandoId() ? 'Editar gasto' : 'Nuevo gasto'"
+  [(visible)]="dialogoAbierto"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+>
+  <div class="form-dialogo">
+    <label>Descripcion</label>
+    <input pInputText [(ngModel)]="form.gastoDescripcion" placeholder="Ej. papeleria, transporte..." />
+
+    <label>Monto (Q)</label>
+    <p-inputNumber [(ngModel)]="form.gastoMonto" mode="decimal" [minFractionDigits]="2" styleClass="w-full" />
+
+    @if (errorGuardar()) {
+      <p-message severity="error" [text]="errorGuardar()!" styleClass="w-full" />
+    }
+
+    <p-button label="Guardar" styleClass="w-full" [loading]="guardando()" (onClick)="guardar()" />
+  </div>
+</p-dialog>
+
+<p-dialog header="Eliminar gasto" [visible]="!!gastoEliminar()" (visibleChange)="!$event && gastoEliminar.set(null)" [modal]="true" [style]="{ width: '380px' }">
+  @if (gastoEliminar(); as gasto) {
+    <p>¿Eliminar el gasto <strong>{{ gasto.gastoDescripcion }}</strong> por Q{{ gasto.gastoMonto | number: '1.2-2' }}?</p>
+    @if (errorEliminar()) {
+      <p-message severity="error" [text]="errorEliminar()!" styleClass="w-full" />
+    }
+    <div class="acciones-confirmar">
+      <p-button label="Cancelar" [text]="true" (onClick)="gastoEliminar.set(null)" />
+      <p-button label="Eliminar" severity="danger" [loading]="eliminando()" (onClick)="confirmarEliminar()" />
+    </div>
+  }
+</p-dialog>

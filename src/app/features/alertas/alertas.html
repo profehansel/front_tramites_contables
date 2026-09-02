@@ -1,0 +1,40 @@
+<div class="page-header">
+  <div>
+    <h1>Alertas de mora</h1>
+    <p>Tramites finalizados hace mas de 30 dias que aun tienen saldo pendiente</p>
+  </div>
+</div>
+
+<p-table [value]="alertas()" [paginator]="true" [rows]="10" styleClass="p-datatable-sm">
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3.5rem">No.</th>
+      <th>Cliente</th>
+      <th>Tramite</th>
+      <th>Fecha finalizado</th>
+      <th>Meses atrasado</th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-alerta let-i="rowIndex">
+    <tr>
+      <td>{{ i + 1 }}</td>
+      <td>
+        <a [routerLink]="['/clientes', alerta.cliente.clienteId]">{{ alerta.cliente.clienteNombre }}</a>
+      </td>
+      <td>{{ alerta.tramite ? nombreTramite(alerta.tramite) : '-' }}</td>
+      <td>{{ alerta.tramite?.tramiteFechaFin ? (alerta.tramite.tramiteFechaFin | date: 'dd/MM/yyyy') : '-' }}</td>
+      <td>
+        <p-tag [value]="mesesAtraso(alerta.tramite?.tramiteFechaFin) + ' mes(es)'" severity="danger" />
+      </td>
+      <td>
+        <p-button label="Marcar vista" size="small" [text]="true" (onClick)="marcarLeida(alerta.alertaId)" />
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="6">No hay alertas pendientes.</td>
+    </tr>
+  </ng-template>
+</p-table>

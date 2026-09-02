@@ -1,0 +1,176 @@
+@if (cliente()) {
+  <div class="page-header">
+    <div>
+      <h1>{{ cliente()!.clienteNombre }}</h1>
+      <p>NIT {{ cliente()!.clienteNit || '-' }} &middot; {{ cliente()!.clienteCorreo || 'sin correo' }}</p>
+    </div>
+  </div>
+
+  <div class="grid-resumen">
+    <div class="card-acento">
+      <p class="etiqueta">Deuda pendiente</p>
+      <h2 class="monto" [class.monto-negativo]="(deuda()?.deuda_pendiente || 0) > 0">
+        Q {{ (deuda()?.deuda_pendiente || 0) | number: '1.2-2' }}
+      </h2>
+    </div>
+
+    <div class="card-acento">
+      <p class="etiqueta">Saldo a favor (adelanto)</p>
+      <h2 class="monto monto-positivo">
+        Q {{ (saldo()?.saldo_disponible || 0) | number: '1.2-2' }}
+      </h2>
+      <div class="acciones-tarjeta">
+        <p-button label="Registrar abono" size="small" [text]="true" (onClick)="abrirDialogoAbono()" />
+        @if ((saldo()?.saldo_disponible || 0) > 0) {
+          <p-button label="Aplicar a tramites" size="small" [text]="true" (onClick)="abrirDialogoSaldo()" />
+        }
+      </div>
+    </div>
+  </div>
+
+  <h2 class="titulo-seccion">Tramites</h2>
+  <p-table [value]="tramites()" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3.5rem">No.</th>
+        <th>Tramite</th>
+        <th>Fecha inicio</th>
+        <th>Fecha finalizado</th>
+        <th>Estado</th>
+        <th>Costo</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-tramite let-i="rowIndex">
+      <tr>
+        <td>{{ i + 1 }}</td>
+        <td>{{ nombreTramite(tramite) }}</td>
+        <td>{{ tramite.tramiteFechaInicio | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ tramite.tramiteFechaFin ? (tramite.tramiteFechaFin | date: 'dd/MM/yyyy') : '-' }}</td>
+        <td>
+          <p-tag
+            [value]="tramite.tramiteStatus"
+            [severity]="
+              tramite.tramiteStatus === 'finalizado'
+                ? 'success'
+                : tramite.tramiteStatus === 'cancelado'
+                  ? 'danger'
+                  : 'info'
+            "
+          />
+        </td>
+        <td class="monto">Q {{ costoTramite(tramite) | number: '1.2-2' }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="6">Este cliente todavia no tiene tramites.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <h2 class="titulo-seccion">Historial de pagos</h2>
+  <p-table [value]="pagos()" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3.5rem">No.</th>
+        <th>Fecha</th>
+        <th>Metodo</th>
+        <th>Monto</th>
+        <th>Aplicado a</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-pago let-i="rowIndex">
+      <tr>
+        <td>{{ i + 1 }}</td>
+        <td>{{ pago.pagoFecha | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <p-tag [value]="pago.pagoMetodo" [severity]="pago.pagoMetodo === 'saldo_adelanto' ? 'warn' : 'info'" />
+        </td>
+        <td class="monto">Q {{ pago.pagoMonto | number: '1.2-2' }}</td>
+        <td>
+          @for (aplicacion of pago.aplicaciones; track aplicacion.aplicacionId) {
+            <span class="chip-aplicacion">
+              {{ nombreTramite(aplicacion.tramite) }} (Q{{ aplicacion.montoAplicado | number: '1.2-2' }})
+            </span>
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">Este cliente todavia no tiene pagos registrados.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <h2 class="titulo-seccion">Movimientos de saldo</h2>
+  <p-table [value]="movimientos()" [paginator]="true" [rows]="5" styleClass="p-datatable-sm">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3.5rem">No.</th>
+        <th>Fecha</th>
+        <th>Tipo</th>
+        <th>Monto</th>
+        <th>Descripcion</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-mov let-i="rowIndex">
+      <tr>
+        <td>{{ i + 1 }}</td>
+        <td>{{ mov.saldoFecha | date: 'dd/MM/yyyy' }}</td>
+        <td>
+          <p-tag
+            [value]="mov.saldoTipoMovimiento"
+            [severity]="mov.saldoTipoMovimiento === 'abono' ? 'success' : 'warn'"
+          />
+        </td>
+        <td class="monto">Q {{ mov.saldoMonto | number: '1.2-2' }}</td>
+        <td>{{ mov.saldoDescripcion || '-' }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">Este cliente todavia no tiene movimientos de saldo.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+}
+
+<p-dialog header="Registrar abono" [(visible)]="dialogoAbonoAbierto" [modal]="true" [style]="{ width: '360px' }">
+  <div class="form-dialogo">
+    <label>Monto del adelanto (Q)</label>
+    <p-inputNumber [(ngModel)]="montoAbono" mode="decimal" [minFractionDigits]="2" styleClass="w-full" />
+    <p-button label="Guardar" styleClass="w-full" [loading]="guardandoAbono()" (onClick)="guardarAbono()" />
+  </div>
+</p-dialog>
+
+<p-dialog
+  header="Aplicar saldo a tramites pendientes"
+  [(visible)]="dialogoSaldoAbierto"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+>
+  <p class="ayuda-dialogo">
+    Selecciona los tramites a cubrir. Solo se aplicara el saldo a los tramites que el saldo
+    disponible alcance a cubrir por completo; los que no alcancen se dejan pendientes.
+  </p>
+  <div class="lista-tramites">
+    @for (tramite of tramites(); track tramite.tramiteId) {
+      @if (tramite.tramiteStatus !== 'cancelado') {
+        <label class="fila-tramite">
+          <p-checkbox
+            [binary]="true"
+            (onChange)="toggleTramiteSeleccionado(tramite.tramiteId, $event.checked)"
+          />
+          <span>{{ nombreTramite(tramite) }} - Q {{ costoTramite(tramite) | number: '1.2-2' }}</span>
+        </label>
+      }
+    }
+  </div>
+  <p-button
+    label="Aplicar saldo"
+    styleClass="w-full"
+    [loading]="aplicandoSaldo()"
+    (onClick)="aplicarSaldo()"
+  />
+</p-dialog>

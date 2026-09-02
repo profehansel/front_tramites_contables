@@ -1,0 +1,43 @@
+<div class="login-shell">
+  <div class="login-tarjeta">
+    <div class="login-marca">
+      <span class="pi pi-briefcase"></span>
+      <h1>Sistema de Tramites</h1>
+      <p>Panel del contador</p>
+    </div>
+
+    <form (ngSubmit)="ingresar()" class="login-form">
+      <label for="usuario">Usuario</label>
+      <input
+        pInputText
+        id="usuario"
+        name="usuario"
+        [(ngModel)]="usuarioNombre"
+        autocomplete="username"
+        required
+      />
+
+      <label for="password">Contrasenia</label>
+      <p-password
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        [toggleMask]="true"
+        [feedback]="false"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+      />
+
+      @if (error()) {
+        <p-message severity="error" [text]="error()!" styleClass="w-full" />
+      }
+
+      <p-button
+        label="Ingresar"
+        type="submit"
+        [loading]="cargando()"
+        styleClass="w-full"
+      />
+    </form>
+  </div>
+</div>
