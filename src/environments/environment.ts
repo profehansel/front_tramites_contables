@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'apitramitescontables-production.up.railway.app/api',
+  apiUrl: 'https://apitramitescontables-production.up.railway.app/api',
 };
